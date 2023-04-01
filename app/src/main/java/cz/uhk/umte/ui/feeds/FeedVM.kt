@@ -1,28 +1,33 @@
-package cz.uhk.umte.ui.room
+package cz.uhk.umte.ui.feeds
 
 import cz.uhk.umte.data.db.dao.NoteDao
 import cz.uhk.umte.data.db.entities.NoteEntity
 import cz.uhk.umte.ui.base.BaseViewModel
 
-class RoomVM(
-    private val noteDao: NoteDao,
+class FeedVM(
+    private val feedDao: NoteDao,
 ) : BaseViewModel() {
 
-    val notes = noteDao.selectAll()
+    val feeds = feedDao.selectAll()
 
-    fun addNote(text: String) {
+    fun addFeed(text: String) {
         launch {
-            noteDao.insertOrUpdate(
+            feedDao.insertOrUpdate(
                 note = NoteEntity(
                     text = text,
                 )
             )
         }
     }
+    fun removeFeed(note: NoteEntity){
+        launch{
+            feedDao.remove(note)
+        }
+    }
 
     fun handleNoteCheck(note: NoteEntity) {
         launch {
-            noteDao.insertOrUpdate(
+            feedDao.insertOrUpdate(
                 note = note.copy(
                     solved = note.solved.not(),
                 )
@@ -32,7 +37,7 @@ class RoomVM(
 
     fun handleNotePriority(note: NoteEntity, newPriority: Int) {
         launch {
-            noteDao.insertOrUpdate(
+            feedDao.insertOrUpdate(
                 note = note.copy(
                     priority = newPriority
                 )

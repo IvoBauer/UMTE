@@ -13,7 +13,7 @@ import cz.uhk.umte.data.db.entities.NoteEntity
 )
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun noteDao(): NoteDao
+    abstract fun feedDao(): NoteDao
 
     companion object {
         const val Version = 1

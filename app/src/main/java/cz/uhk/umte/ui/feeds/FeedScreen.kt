@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalFoundationApi::class)
 
-package cz.uhk.umte.ui.room
+package cz.uhk.umte.ui.feeds
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
@@ -15,10 +15,10 @@ import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun RoomScreen(
-    viewModel: RoomVM = getViewModel(),
+    viewModel: FeedVM = getViewModel(),
 ) {
 
-    val notes = viewModel.notes.collectAsState(emptyList())
+    val feeds = viewModel.feeds.collectAsState(emptyList())
 
     Column {
         LazyColumn(
@@ -29,13 +29,12 @@ fun RoomScreen(
             contentPadding = PaddingValues(16.dp),
         ) {
             items(
-                items = notes.value,
+                items = feeds.value,
                 key = { it.id },
             ) { note ->
                 Card(
                     backgroundColor = MaterialTheme.colors.background,
                     contentColor = MaterialTheme.colors.onBackground,
-                    modifier = Modifier.animateItemPlacement(),
                 ) {
                     Column(
                         modifier = Modifier.padding(16.dp),
@@ -47,29 +46,27 @@ fun RoomScreen(
                             modifier = Modifier.fillMaxWidth(),
                         )
                         Row {
+                            Checkbox(
+                                checked = note.solved,
+                                onCheckedChange = {
+                                    viewModel.handleNoteCheck(note)
+                                },
+                            )
+                            Text(
+                                text = "Active",
+                                modifier = Modifier.align(Alignment.CenterVertically),
+                            )
                             TextButton(onClick = {
-                                viewModel.handleNotePriority(note, note.priority + 1)
+                                viewModel.removeFeed(note)
                             }) {
-                                Text("+")
-                            }
-
-                            TextButton(onClick = {
-                                viewModel.handleNotePriority(note, note.priority - 1)
-                            }) {
-                                Text("-")
+                                Text("Delete Feed")
                             }
                         }
-                        Checkbox(
-                            checked = note.solved,
-                            onCheckedChange = {
-                                viewModel.handleNoteCheck(note)
-                            },
-                        )
-                    }
+                        }
                 }
             }
         }
-        var inputText by remember { mutableStateOf("") }
+        var inputText by remember { mutableStateOf("https://www.reddit.com/r/AskReddit/new/.rss") }
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(8.dp),
@@ -79,7 +76,15 @@ fun RoomScreen(
                 value = inputText,
                 onValueChange = { inputText = it },
                 label = {
-                    Text(text = "Note")
+                    Text(text = "Feed NAME")
+                },
+                modifier = Modifier.weight(1F),
+            )
+            OutlinedTextField(
+                value = inputText,
+                onValueChange = { inputText = it },
+                label = {
+                    Text(text = "Feed URI")
                 },
                 modifier = Modifier.weight(1F),
             )
@@ -87,7 +92,7 @@ fun RoomScreen(
                 modifier = Modifier.height(IntrinsicSize.Max),
                 enabled = inputText.isBlank().not(),
                 onClick = {
-                    viewModel.addNote(inputText)
+                    viewModel.addFeed(inputText)
                     inputText = ""
                 },
             ) {

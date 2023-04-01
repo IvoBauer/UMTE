@@ -14,10 +14,9 @@ import cz.uhk.umte.di.repositories.SpaceXRepository
 import cz.uhk.umte.ui.async.launches.LaunchesViewModel
 import cz.uhk.umte.ui.async.rocket.RocketDetailViewModel
 import cz.uhk.umte.ui.datastore.DataStoreViewModel
-import cz.uhk.umte.ui.room.RoomVM
+import cz.uhk.umte.ui.feeds.FeedVM
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidApplication
@@ -38,7 +37,7 @@ val dataModule = module {
 val uiModule = module {
     viewModel { LaunchesViewModel(get()) }
     viewModel { (rocketId: String) -> RocketDetailViewModel(rocketId, get()) }
-    viewModel { RoomVM(get()) }
+    viewModel { FeedVM(get()) }
     viewModel { DataStoreViewModel(get()) }
 }
 
@@ -67,7 +66,7 @@ private fun Module.db() {
             .build()
     }
     // Dao
-    single { get<AppDatabase>().noteDao() }
+    single { get<AppDatabase>().feedDao() }
 }
 
 private val json = Json {

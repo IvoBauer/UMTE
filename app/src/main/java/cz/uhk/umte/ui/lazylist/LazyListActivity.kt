@@ -102,7 +102,6 @@ private suspend fun getFeeds(){
         val articlesMEOW = channel.articles;
         print(articlesMEOW.size)
         print("---------------------------------------------")
-        print("---------------------------------------------")
         // Do something with your data
 
     } catch (e: Exception) {

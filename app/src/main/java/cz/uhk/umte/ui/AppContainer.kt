@@ -12,7 +12,7 @@ import cz.uhk.umte.ui.datastore.DataStoreScreen
 import cz.uhk.umte.ui.home.HomeScreen
 import cz.uhk.umte.ui.intents.IntentsScreen
 import cz.uhk.umte.ui.notifications.NotificationScreen
-import cz.uhk.umte.ui.room.RoomScreen
+import cz.uhk.umte.ui.feeds.RoomScreen
 
 @Composable
 fun AppContainer(
