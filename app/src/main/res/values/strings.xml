@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">UMTE</string>
+
+    <string name="home_btn_activity_form">Aktivita s formulářem</string>
+    <string name="home_btn_activity_list">Aktivita s listem</string>
+    <string name="home_btn_dialog">Dialog</string>
+    <string name="home_btn_launches">Rocket launches</string>
+
+    <string name="retry">Načíst znovu</string>
+
+    <string name="form_screen_appbar_title">Aktivita s formulářem</string>
+    <string name="form_screen_title">Vyplňte formulář</string>
+    <string name="form_screen_input_name">Jméno</string>
+    <string name="form_screen_input_last_name">Přijmení</string>
+    <string name="form_screen_select_gender">Pohlaví</string>
+    <string name="form_screen_select_gender_man">Muž</string>
+    <string name="form_screen_select_gender_woman">Žena</string>
+    <string name="form_screen_select_gender_undefined">Nevybráno</string>
+    <string name="form_screen_btn_save">Uložit</string>
+</resources>
