@@ -10,11 +10,12 @@ class FeedVM(
 
     val feeds = feedDao.selectAll()
 
-    fun addFeed(text: String) {
+    fun addFeed(feedName: String, feedUri: String) {
         launch {
             feedDao.insertOrUpdate(
                 note = NoteEntity(
-                    text = text,
+                    text = feedName,
+                    uri =  feedUri
                 )
             )
         }

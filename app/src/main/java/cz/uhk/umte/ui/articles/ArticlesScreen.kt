@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalFoundationApi::class)
 
-package cz.uhk.umte.ui.feeds
+package cz.uhk.umte.ui.articles
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
@@ -14,10 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import cz.uhk.umte.ui.feeds.FeedVM
 import org.koin.androidx.compose.getViewModel
 
 @Composable
-fun FeedScreen(
+fun ArticlesScreen(
     viewModel: FeedVM = getViewModel(),
 ) {
 
@@ -80,47 +81,6 @@ fun FeedScreen(
                         }
                         }
                 }
-            }
-        }
-        var feedName by remember { mutableStateOf("Reddit NEWS") }
-        var feedUri by remember { mutableStateOf("https://www.reddit.com/r/AskReddit/new/.rss") }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OutlinedTextField(
-                value = feedName,
-                onValueChange = { feedName = it },
-                label = {
-                    Text(text = "Feed NAME")
-                },
-                modifier = Modifier.weight(1F),
-            )
-        }
-        Row (horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-
-
-            OutlinedTextField(
-                value = feedUri,
-                onValueChange = { feedUri = it },
-                label = {
-                    Text(text = "Feed URI")
-                },
-                modifier = Modifier.weight(1F),
-            )
-            Button(
-                modifier = Modifier.height(IntrinsicSize.Max),
-                enabled = feedUri.isBlank().not(),
-                onClick = {
-                    viewModel.addFeed(feedName,feedUri)
-                    feedName = ""
-                    feedUri = ""
-                },
-            ) {
-                Text(text = "Add")
             }
         }
     }

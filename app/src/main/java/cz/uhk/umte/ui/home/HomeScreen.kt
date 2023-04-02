@@ -32,6 +32,22 @@ fun HomeScreen(
     ) {
         Button(
             onClick = {
+                parentController.navigateRoomScreen()
+            }
+        ) {
+            Text(text = "Subscribed feeds")
+        }
+
+        Button(
+            onClick = {
+                parentController.navigateRoomScreen2()
+            }
+        ) {
+            Text(text = "Read articles")
+        }
+
+        Button(
+            onClick = {
                 context.startActivity(
                     Intent(context, FormActivity::class.java)
                 )
@@ -64,13 +80,6 @@ fun HomeScreen(
             }
         ) {
             Text(text = stringResource(id = R.string.home_btn_launches))
-        }
-        Button(
-            onClick = {
-                parentController.navigateRoomScreen()
-            }
-        ) {
-            Text(text = "Room screen")
         }
         Button(
             onClick = {

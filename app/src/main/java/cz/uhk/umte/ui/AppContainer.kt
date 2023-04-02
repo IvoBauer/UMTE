@@ -6,13 +6,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import cz.uhk.umte.ui.articles.ArticlesScreen
 import cz.uhk.umte.ui.async.launches.RocketLaunchesScreen
 import cz.uhk.umte.ui.async.rocket.RocketDetailScreen
 import cz.uhk.umte.ui.datastore.DataStoreScreen
 import cz.uhk.umte.ui.home.HomeScreen
 import cz.uhk.umte.ui.intents.IntentsScreen
 import cz.uhk.umte.ui.notifications.NotificationScreen
-import cz.uhk.umte.ui.feeds.RoomScreen
+import cz.uhk.umte.ui.feeds.FeedScreen
 
 @Composable
 fun AppContainer(
@@ -55,9 +56,14 @@ fun AppContainer(
         composable(
             route = DestinationRoom
         ) {
-            RoomScreen()
+            FeedScreen()
         }
 
+        composable(
+            route = DestinationRoom2
+        ) {
+            ArticlesScreen()
+        }
         composable(
             route = DestinationDataStore
         ) {
@@ -84,6 +90,7 @@ private const val DestinationHome = "home"
 private const val DestinationLaunches = "launches"
 private const val DestinationRocketDetail = "rocket/{$ArgRocketId}"
 private const val DestinationRoom = "room"
+private const val DestinationRoom2 = "room2"
 private const val DestinationDataStore = "dataStore"
 private const val DestinationIntents = "intents"
 private const val DestinationNotifications = "notifications"
@@ -96,6 +103,9 @@ fun NavHostController.navigateRocketLaunches() =
 
 fun NavHostController.navigateRoomScreen() =
     navigate(DestinationRoom)
+
+fun NavHostController.navigateRoomScreen2() =
+    navigate(DestinationRoom2)
 
 fun NavHostController.navigateDataStoreScreen() =
     navigate(DestinationDataStore)
