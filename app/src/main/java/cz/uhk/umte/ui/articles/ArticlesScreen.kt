@@ -6,25 +6,29 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.Button
+import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.MutableLiveData
 import com.prof.rssparser.Parser
 import cz.uhk.umte.data.db.entities.ArticleEntity
 import cz.uhk.umte.data.db.entities.NoteEntity
 import cz.uhk.umte.ui.feeds.FeedVM
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.forEach
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.getViewModel
 import java.nio.charset.Charset
+import java.sql.Date
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 fun ArticlesScreen(
@@ -37,15 +41,31 @@ fun ArticlesScreen(
     val feeds = viewModel.feeds.collectAsState(emptyList
         ())
 
+
     var meow = mutableListOf<NoteEntity>()
+    var articles by remember { mutableStateOf(emptyList<ArticleEntity>()) }
     val feeds3 = feeds.value
     feeds3.forEach { feed ->
         meow.add(feed)
         myScope.launch {
+            val newArticles = getFeeds(feed)
+            newArticles.forEach{
+                    //newArticle -> articles.add(newArticle)
+            }
 
-            getFeeds(feed)
-            val article = ArticleEntity("asdad")
         }
+
+        LaunchedEffect(Unit) {
+            val newArticles =  getFeeds(feed) // získání seznamu článků z RSS
+            withContext(Dispatchers.Main) {
+                articles += newArticles // aktualizace stavové proměnné s novými články
+            }
+        }
+    }
+
+
+    articles.forEach{
+     item -> println(item.title)
     }
         Column {
         LazyColumn(
@@ -56,8 +76,7 @@ fun ArticlesScreen(
             contentPadding = PaddingValues(16.dp),
         ) {
             items(
-                items = feeds.value,
-                key = { it.id },
+                items = articles,
             ) { note ->
                 Card(
                     backgroundColor = MaterialTheme.colors.background,
@@ -68,14 +87,21 @@ fun ArticlesScreen(
                         horizontalAlignment = Alignment.End,
                     ) {
                         Text(
-                            text = note.text,
+                            text = note.title ?: "Title not found. :/",
                             style = MaterialTheme.typography.h5,
                             modifier = Modifier.fillMaxWidth(),
                         )
                         Row {
                             Text(
                                 //text = note.uri,
-                                text = "https://servis.idnes.cz/rss.aspx?c=zpravodaj",
+                                text = note.summary ?: "Summary not found. :/",
+                                style = MaterialTheme.typography.h6,
+                                color = Color.Gray
+                            )
+                        }
+                        Row {
+                            Text(
+                                text = note.pubDate.toString(),
                                 style = MaterialTheme.typography.h6,
                                 color = Color.Gray
                             )
@@ -98,7 +124,8 @@ fun ArticlesScreen(
     }
 }
 
-private suspend fun getFeeds(feed: NoteEntity){
+private suspend fun getFeeds(feed: NoteEntity): List<ArticleEntity>{
+    val articles = mutableListOf<ArticleEntity>()
     val parser = Parser.Builder()
         .charset(Charset.forName("ISO-8859-7"))
         .build()
@@ -110,8 +137,15 @@ private suspend fun getFeeds(feed: NoteEntity){
     try {
 
         val channel = parser.getChannel(url)
-        val articlesMEOW = channel.articles;
-        print(articlesMEOW.size)
+        //val articlesMEOW = channel.articles;
+        channel.articles.forEach { item ->
+            val dateString = item.pubDate
+            val format = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH)
+            val date = format.parse(dateString)
+        articles.add(
+            ArticleEntity(item.title, item.description, date)
+        )
+        }
         print("---------------------------------------------")
         // Do something with your data
 
@@ -119,4 +153,10 @@ private suspend fun getFeeds(feed: NoteEntity){
         e.printStackTrace()
         // Handle the exception
     }
+    return articles
+}
+
+private fun getTime(date: Date):String{
+    val stringDate = date.toString()
+    return stringDate
 }
