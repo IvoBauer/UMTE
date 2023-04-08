@@ -6,7 +6,10 @@ import cz.uhk.umte.data.db.entities.NoteEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface NoteDao {
+interface
+
+
+NoteDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrUpdate(note: NoteEntity)
@@ -14,6 +17,13 @@ interface NoteDao {
     @Query("Select * From NoteEntity Order By priority Desc")
     fun selectAll(): Flow<List<NoteEntity>>
 
+    @Query("Select * From NoteEntity Order By priority Desc")
+    fun getAll(): List<NoteEntity>
+
     @Delete
     fun remove(note: NoteEntity)
+
+    @Query("SELECT * FROM NoteEntity")
+    fun getAllPersons(): List<NoteEntity>
+
 }

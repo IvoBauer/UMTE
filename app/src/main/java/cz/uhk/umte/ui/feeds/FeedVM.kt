@@ -1,8 +1,11 @@
 package cz.uhk.umte.ui.feeds
 
+import android.provider.ContactsContract.CommonDataKinds.Note
 import cz.uhk.umte.data.db.dao.NoteDao
 import cz.uhk.umte.data.db.entities.NoteEntity
 import cz.uhk.umte.ui.base.BaseViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.runBlocking
 
 class FeedVM(
     private val feedDao: NoteDao,

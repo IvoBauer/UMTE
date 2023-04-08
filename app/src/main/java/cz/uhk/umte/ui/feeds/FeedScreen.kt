@@ -14,14 +14,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import cz.uhk.umte.data.db.entities.NoteEntity
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun FeedScreen(
     viewModel: FeedVM = getViewModel(),
 ) {
-
     val feeds = viewModel.feeds.collectAsState(emptyList())
+    val feeds3 = feeds.value
+
+// projití seznamu feeds a zpracování jednotlivých položek
+    var meow = mutableListOf<NoteEntity>()
+    feeds3.forEach { feed ->
+        // zpracování jednotlivé položky feed
+        meow.add(feed)
+    }
+    println("--------------------------------------------------------------------------------------------------------------------")
+    println("--------------------------------------------------------------------------------------------------------------------")
+    println(meow.size)
+    println(meow.size)
 
     Column {
         LazyColumn(
@@ -32,8 +47,8 @@ fun FeedScreen(
             contentPadding = PaddingValues(16.dp),
         ) {
             items(
-                items = feeds.value,
-                key = { it.id },
+                //items = feeds.value,
+                items = meow,
             ) { note ->
                 Card(
                     backgroundColor = MaterialTheme.colors.background,
@@ -124,4 +139,8 @@ fun FeedScreen(
             }
         }
     }
+}
+
+fun readValue(string: List<NoteEntity>){
+    print(string)
 }
