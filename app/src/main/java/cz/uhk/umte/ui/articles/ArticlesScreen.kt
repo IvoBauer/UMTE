@@ -26,7 +26,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.getViewModel
 import java.nio.charset.Charset
-import java.sql.Date
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -58,7 +57,7 @@ fun ArticlesScreen(
         LaunchedEffect(Unit) {
             val newArticles =  getFeeds(feed) // získání seznamu článků z RSS
             withContext(Dispatchers.Main) {
-                articles += newArticles // aktualizace stavové proměnné s novými články
+                articles = articles + newArticles // aktualizace stavové proměnné s novými články
             }
         }
     }
@@ -101,7 +100,7 @@ fun ArticlesScreen(
                         }
                         Row {
                             Text(
-                                text = note.pubDate.toString(),
+                                text = getTime(note.pubDate),
                                 style = MaterialTheme.typography.h6,
                                 color = Color.Gray
                             )
@@ -157,6 +156,15 @@ private suspend fun getFeeds(feed: NoteEntity): List<ArticleEntity>{
 }
 
 private fun getTime(date: Date):String{
-    val stringDate = date.toString()
+    val calendar = Calendar.getInstance()
+    calendar.time = date
+
+    val hours = calendar.get(Calendar.HOUR_OF_DAY).toString()
+    val minutes = calendar.get(Calendar.MINUTE).toString()
+    val days = calendar.get(Calendar.DAY_OF_MONTH).toString()
+    val month = calendar.get(Calendar.MONTH).toString()
+    val year = calendar.get(Calendar.YEAR).toString()
+
+    val stringDate = hours + ":" + minutes + " " + days + ". " + month + ". " + year
     return stringDate
 }
