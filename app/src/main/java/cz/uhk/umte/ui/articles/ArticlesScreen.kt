@@ -24,6 +24,8 @@ import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.getViewModel
 import java.nio.charset.Charset
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 @Composable
@@ -32,23 +34,20 @@ fun ArticlesScreen(
 ) {
     Row {
         Text(
-            text = "VERZE 1.00",
+            text = "VERZE 1.02",
             style = MaterialTheme.typography.h6,
             color = Color.Gray
         )
     }
 
-    // vytvoření instance CoroutineScope
-    val myScope = CoroutineScope(Dispatchers.Default)
-
-    val feeds = viewModel.feeds.collectAsState(emptyList
-        ())
+    val feeds = viewModel.feeds.collectAsState(emptyList())
     var isLoading by remember { mutableStateOf(true) }
-
-    var meow = mutableListOf<NoteEntity>()
     var articles by remember { mutableStateOf(emptyList<ArticleEntity>()) }
     val feeds3 = feeds.value
+
     feeds3.forEach { feed ->
+
+        if (feed.solved){
 
         LaunchedEffect(Unit) {
             val newArticles =  getFeeds(feed) // získání seznamu článků z RSS
@@ -56,6 +55,19 @@ fun ArticlesScreen(
                 articles = articles + newArticles // aktualizace stavové proměnné s novými články
             }
             isLoading = false
+        }
+        }
+    }
+    if (feeds3.isEmpty()){
+        isLoading = false
+    }
+    if (articles.isEmpty()){
+        Row {
+            Text(
+                text = "ERROR ŽÁDNÝ ČLÁNEK!!!",
+                style = MaterialTheme.typography.h6,
+                color = Color.Gray
+            )
         }
     }
 
@@ -67,6 +79,14 @@ fun ArticlesScreen(
             CircularProgressIndicator()
         }
     } else {
+        val sortedArticles = articles.sortedByDescending { it.pubDate }
+        println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+        sortedArticles.forEach(){
+            item ->
+            val article = item.pubDate.toString() + " " + item.title
+            println(article)
+        }
+        println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         Column {
             LazyColumn(
                 modifier = Modifier
@@ -123,15 +143,6 @@ fun ArticlesScreen(
             }
         }
     }
-    if (articles.size == 0){
-        Row {
-            Text(
-                text = "ERROR ŽÁDNÝ ČLÁNEK!!!",
-                style = MaterialTheme.typography.h6,
-                color = Color.Gray
-            )
-        }
-    }
 }
 
 private suspend fun getFeeds(feed: NoteEntity): List<ArticleEntity>{
@@ -144,8 +155,7 @@ private suspend fun getFeeds(feed: NoteEntity): List<ArticleEntity>{
 
     //val url = "https://domaci.hn.cz/?m=rss"
     //val url = "https://servis.idnes.cz/rss.aspx?c=zpravodaj"
-    //val url = feed.uri
-    val url = "http://rss.cnn.com/rss/edition.rss"
+    val url = feed.uri
 
     try {
         val channel = parser.getChannel(url)
@@ -153,23 +163,32 @@ private suspend fun getFeeds(feed: NoteEntity): List<ArticleEntity>{
         channel.articles.forEach { item ->
 
             val dateString = item.pubDate
-
             var date : Date? = null
-            if (dateString != null) {
-
-
-                var format = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH)
-                if (dateString?.takeLast(5).equals("+0200")) {
-                    val locale = Locale("cs", "CZ")
-                    format = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", locale)
+            try {
+                val formatXXXX = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH)
+                val dateTEST = formatXXXX.parse(dateString)
+                date = dateTEST
+            } catch (e: Exception){
+                e.printStackTrace()
+            }
+            try {
+                if (dateString != null && date != null) {
+                    var format = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH)
+                    if (dateString?.takeLast(5).equals("+0200")) {
+                        val locale = Locale("cs", "CZ")
+                        format = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", locale)
+                    }
+                    date = format.parse(dateString)
                 }
-                date = format.parse(dateString)
+            } catch (e: Exception){
+                e.printStackTrace()
             }
         articles.add(
             ArticleEntity(item.title, item.description, date)
         )
         }
     } catch (e: Exception) {
+
         e.printStackTrace()
         // Handle the exception
     }
