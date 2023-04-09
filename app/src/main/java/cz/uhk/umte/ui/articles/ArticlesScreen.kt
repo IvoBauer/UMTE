@@ -34,7 +34,7 @@ fun ArticlesScreen(
 ) {
     Row {
         Text(
-            text = "VERZE 1.02",
+            text = "VERZE 1.03",
             style = MaterialTheme.typography.h6,
             color = Color.Gray
         )
