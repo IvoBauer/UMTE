@@ -5,5 +5,5 @@ import java.util.Date
 class ArticleEntity(
     val title: String?,
     val summary: String?,
-    val pubDate: Date
+    val pubDate: Date?
 )

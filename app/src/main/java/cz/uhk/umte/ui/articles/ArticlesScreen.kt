@@ -6,10 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,92 +30,106 @@ import java.util.*
 fun ArticlesScreen(
     viewModel: FeedVM = getViewModel(),
 ) {
+    Row {
+        Text(
+            text = "VERZE 1.00",
+            style = MaterialTheme.typography.h6,
+            color = Color.Gray
+        )
+    }
 
     // vytvoření instance CoroutineScope
     val myScope = CoroutineScope(Dispatchers.Default)
 
     val feeds = viewModel.feeds.collectAsState(emptyList
         ())
-
+    var isLoading by remember { mutableStateOf(true) }
 
     var meow = mutableListOf<NoteEntity>()
     var articles by remember { mutableStateOf(emptyList<ArticleEntity>()) }
     val feeds3 = feeds.value
     feeds3.forEach { feed ->
-        meow.add(feed)
-        myScope.launch {
-            val newArticles = getFeeds(feed)
-            newArticles.forEach{
-                    //newArticle -> articles.add(newArticle)
-            }
-
-        }
 
         LaunchedEffect(Unit) {
             val newArticles =  getFeeds(feed) // získání seznamu článků z RSS
             withContext(Dispatchers.Main) {
                 articles = articles + newArticles // aktualizace stavové proměnné s novými články
             }
+            isLoading = false
         }
     }
 
-
-    articles.forEach{
-     item -> println(item.title)
-    }
-        Column {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1F),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(16.dp),
+    if (isLoading) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
         ) {
-            items(
-                items = articles,
-            ) { note ->
-                Card(
-                    backgroundColor = MaterialTheme.colors.background,
-                    contentColor = MaterialTheme.colors.onBackground,
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.End,
+            CircularProgressIndicator()
+        }
+    } else {
+        Column {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1F),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(16.dp),
+            ) {
+                items(
+                    items = articles,
+                ) { note ->
+                    Card(
+                        backgroundColor = MaterialTheme.colors.background,
+                        contentColor = MaterialTheme.colors.onBackground,
                     ) {
-                        Text(
-                            text = note.title ?: "Title not found. :/",
-                            style = MaterialTheme.typography.h5,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                        Row {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalAlignment = Alignment.End,
+                        ) {
                             Text(
-                                //text = note.uri,
-                                text = note.summary ?: "Summary not found. :/",
-                                style = MaterialTheme.typography.h6,
-                                color = Color.Gray
+                                text = note.title ?: "Title not found. :/",
+                                style = MaterialTheme.typography.h5,
+                                modifier = Modifier.fillMaxWidth(),
                             )
-                        }
-                        Row {
-                            Text(
-                                text = getTime(note.pubDate),
-                                style = MaterialTheme.typography.h6,
-                                color = Color.Gray
-                            )
-                        }
+                            Row {
+                                Text(
+                                    //text = note.uri,
+                                    text = note.summary ?: "Summary not found. :/",
+                                    style = MaterialTheme.typography.h6,
+                                    color = Color.Gray
+                                )
+                            }
+                            Row {
+                                Text(
+                                    text = getTime(note.pubDate) ?: "Date not found.",
+                                    style = MaterialTheme.typography.h6,
+                                    color = Color.Gray
+                                )
+                            }
 
-                        Row (horizontalArrangement = Arrangement.SpaceBetween){
-                            Spacer(modifier = Modifier.width(width = 60.dp))
+                            Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                                Spacer(modifier = Modifier.width(width = 60.dp))
 
-                            Button(onClick = {
-                                //viewModel.removeFeed(note)
-                            }) {
-                                Text("Read article", style = MaterialTheme.typography.h6)
-                                //Icon(imageVector = Icons.Default.Delete, contentDescription = "Read article", modifier = Modifier.align(Alignment.CenterVertically))
+                                Button(onClick = {
+                                    //viewModel.removeFeed(note)
+                                }) {
+                                    Text("Read article", style = MaterialTheme.typography.h6)
+                                    //Icon(imageVector = Icons.Default.Delete, contentDescription = "Read article", modifier = Modifier.align(Alignment.CenterVertically))
+                                }
                             }
                         }
-                        }
+                    }
                 }
             }
+        }
+    }
+    if (articles.size == 0){
+        Row {
+            Text(
+                text = "ERROR ŽÁDNÝ ČLÁNEK!!!",
+                style = MaterialTheme.typography.h6,
+                color = Color.Gray
+            )
         }
     }
 }
@@ -126,46 +137,63 @@ fun ArticlesScreen(
 private suspend fun getFeeds(feed: NoteEntity): List<ArticleEntity>{
     val articles = mutableListOf<ArticleEntity>()
     val parser = Parser.Builder()
-        .charset(Charset.forName("ISO-8859-7"))
+        .charset(Charset.forName("UTF-8"))
         .build()
 
     //url of RSS feed
 
-    val url = "https://www.androidauthority.com/feed"
+    //val url = "https://domaci.hn.cz/?m=rss"
+    //val url = "https://servis.idnes.cz/rss.aspx?c=zpravodaj"
+    //val url = feed.uri
+    val url = "http://rss.cnn.com/rss/edition.rss"
 
     try {
-
         val channel = parser.getChannel(url)
         //val articlesMEOW = channel.articles;
         channel.articles.forEach { item ->
+
             val dateString = item.pubDate
-            val format = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH)
-            val date = format.parse(dateString)
+
+            var date : Date? = null
+            if (dateString != null) {
+
+
+                var format = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH)
+                if (dateString?.takeLast(5).equals("+0200")) {
+                    val locale = Locale("cs", "CZ")
+                    format = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", locale)
+                }
+                date = format.parse(dateString)
+            }
         articles.add(
             ArticleEntity(item.title, item.description, date)
         )
         }
-
     } catch (e: Exception) {
         e.printStackTrace()
         // Handle the exception
     }
+
+
     return articles
 }
 
-private fun getTime(date: Date):String{
-    val calendar = Calendar.getInstance()
-    calendar.time = date
+private fun getTime(date: Date?):String?{
+    var stringDate: String? = null
+    if (date != null){
+        val calendar = Calendar.getInstance()
+        calendar.time = date
 
-    val stringHours = calendar.get(Calendar.HOUR_OF_DAY).toString()
-    val minutes = calendar.get(Calendar.MINUTE)
-    val stringDays = calendar.get(Calendar.DAY_OF_MONTH).toString()
-    val stringMonth = calendar.get(Calendar.MONTH).toString()
-    val stringYear = calendar.get(Calendar.YEAR).toString()
-    var stringMinutes = minutes.toString()
-    if (minutes < 10){
-        stringMinutes = "0" + stringMinutes
+        val stringHours = calendar.get(Calendar.HOUR_OF_DAY).toString()
+        val minutes = calendar.get(Calendar.MINUTE)
+        val stringDays = calendar.get(Calendar.DAY_OF_MONTH).toString()
+        val stringMonth = calendar.get(Calendar.MONTH).toString()
+        val stringYear = calendar.get(Calendar.YEAR).toString()
+        var stringMinutes = minutes.toString()
+        if (minutes < 10) {
+            stringMinutes = "0" + stringMinutes
+        }
+        stringDate = stringHours + ":" + stringMinutes + " " + stringDays + ". " + stringMonth + ". " + stringYear
     }
-    val stringDate = stringHours + ":" + stringMinutes + " " + stringDays + ". " + stringMonth + ". " + stringYear
     return stringDate
 }

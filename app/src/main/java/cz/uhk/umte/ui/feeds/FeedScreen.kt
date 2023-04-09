@@ -66,7 +66,7 @@ fun FeedScreen(
                         Row {
                             Text(
                                 //text = note.uri,
-                                text = "https://servis.idnes.cz/rss.aspx?c=zpravodaj",
+                                text = note.uri,
                                 style = MaterialTheme.typography.h6,
                                 color = Color.Gray
                             )
@@ -98,7 +98,7 @@ fun FeedScreen(
             }
         }
         var feedName by remember { mutableStateOf("Reddit NEWS") }
-        var feedUri by remember { mutableStateOf("https://www.reddit.com/r/AskReddit/new/.rss") }
+        var feedUri by remember { mutableStateOf("https://servis.idnes.cz/rss.aspx?c=zpravodaj") }
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(8.dp),
