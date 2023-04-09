@@ -145,8 +145,6 @@ private suspend fun getFeeds(feed: NoteEntity): List<ArticleEntity>{
             ArticleEntity(item.title, item.description, date)
         )
         }
-        print("---------------------------------------------")
-        // Do something with your data
 
     } catch (e: Exception) {
         e.printStackTrace()
@@ -159,12 +157,15 @@ private fun getTime(date: Date):String{
     val calendar = Calendar.getInstance()
     calendar.time = date
 
-    val hours = calendar.get(Calendar.HOUR_OF_DAY).toString()
-    val minutes = calendar.get(Calendar.MINUTE).toString()
-    val days = calendar.get(Calendar.DAY_OF_MONTH).toString()
-    val month = calendar.get(Calendar.MONTH).toString()
-    val year = calendar.get(Calendar.YEAR).toString()
-
-    val stringDate = hours + ":" + minutes + " " + days + ". " + month + ". " + year
+    val stringHours = calendar.get(Calendar.HOUR_OF_DAY).toString()
+    val minutes = calendar.get(Calendar.MINUTE)
+    val stringDays = calendar.get(Calendar.DAY_OF_MONTH).toString()
+    val stringMonth = calendar.get(Calendar.MONTH).toString()
+    val stringYear = calendar.get(Calendar.YEAR).toString()
+    var stringMinutes = minutes.toString()
+    if (minutes < 10){
+        stringMinutes = "0" + stringMinutes
+    }
+    val stringDate = stringHours + ":" + stringMinutes + " " + stringDays + ". " + stringMonth + ". " + stringYear
     return stringDate
 }

@@ -99,7 +99,7 @@ private suspend fun getFeeds(){
     try {
 
         val channel = parser.getChannel(url)
-        val articlesMEOW = channel.articles;
+        val articlesMEOW = channel.articles
         print(articlesMEOW.size)
         print("---------------------------------------------")
         // Do something with your data
