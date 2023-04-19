@@ -11,22 +11,36 @@ class SchemeVM(
 
     val schemes = schemeDao.selectAll()
     fun checkSchemes(){
-        launch {
+        val meow = launch {
             val schemes = schemeDao.getAll()
             if (schemes.size == 0){
-                addScheme("První")
-                addScheme("Druhý")
-                addScheme("Třetí")
-                addScheme("čtvrtý")
+                addScheme("První",false)
+                addScheme("Druhý",false)
+                addScheme("Třetí",true)
+                addScheme("čtvrtý",false)
             }
         }
     }
 
-    fun addScheme(description: String) {
+    fun changeSchema(scheme: SchemeEntity){
+        launch {
+        schemeDao.unuseAll()
+        schemeDao.insertOrUpdate(
+            note = SchemeEntity(
+                description = scheme.description,
+                used = true,
+                id = scheme.id
+            )
+        )
+        }
+    }
+
+    fun addScheme(description: String, used: Boolean) {
         launch {
             schemeDao.insertOrUpdate(
                 note = SchemeEntity(
-                    description = description
+                    description = description,
+                    used = used
                 )
             )
         }
@@ -34,25 +48,6 @@ class SchemeVM(
     fun removeFeed(note: SchemeEntity){
         launch{
             schemeDao.remove(note)
-        }
-    }
-
-    fun handleNoteCheck(note: SchemeEntity) {
-        launch {
-            schemeDao.insertOrUpdate(
-                note = note.copy(
-                    used = note.used.not(),
-                )
-            )
-        }
-    }
-
-    fun handleNotePriority(note: SchemeEntity, newPriority: Int) {
-        launch {
-            schemeDao.insertOrUpdate(
-                note = note.copy(
-                )
-            )
         }
     }
 

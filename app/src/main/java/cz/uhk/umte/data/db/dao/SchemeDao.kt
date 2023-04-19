@@ -14,6 +14,8 @@ SchemeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrUpdate(note: SchemeEntity)
 
+    @Query("UPDATE SchemeEntity SET used = false")
+    fun unuseAll()
     @Query("Select * From SchemeEntity")
     fun selectAll(): Flow<List<SchemeEntity>>
 

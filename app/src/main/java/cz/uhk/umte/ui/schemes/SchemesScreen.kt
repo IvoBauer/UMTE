@@ -15,6 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import cz.uhk.umte.data.db.entities.SchemeEntity
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -25,64 +27,36 @@ fun SchemeScreen(
     var selectedOptionIndex by remember { mutableStateOf(0) }
     viewModel.checkSchemes()
     var schemes = viewModel.schemes.collectAsState(emptyList()).value
+    if (schemes.size > 0){
+        selectedOptionIndex = schemes.indexOf(schemes.find{it.used})
+    }
 
     Column {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1F),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(16.dp),
-        ) {
-            items(
-                //items = feeds.value,
-                items = schemes,
-            ) { scheme ->
-                Card(
-                    backgroundColor = MaterialTheme.colors.background,
-                    contentColor = MaterialTheme.colors.onBackground,
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.End,
-                    ) {
-                        Text(
-                            text = scheme.description,
-                            style = MaterialTheme.typography.h5,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                        }
-                    }
-                }
-            }
-        }
-/*
-    Column {
-        radioOptions.forEachIndexed { index, text ->
+        schemes.forEachIndexed { index, text ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .selectable(
                         selected = (selectedOptionIndex == index),
-                        onClick = { selectedOptionIndex = index }
+                        onClick = { selectedOptionIndex = index
+                        print(index)}
                     )
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 RadioButton(
                     selected = (selectedOptionIndex == index),
-                    onClick = { selectedOptionIndex = index },
+                    onClick = { selectedOptionIndex = index
+                        viewModel.changeSchema(schemes[index])},
                     colors = RadioButtonDefaults.colors(
                         selectedColor = MaterialTheme.colors.primary
                     )
                 )
                 Text(
-                    text = text,
+                    text = text.description,
                     style = MaterialTheme.typography.body1.merge(),
                     modifier = Modifier.padding(start = 16.dp)
                 )
             }
         }
     }
-
- */
 }
