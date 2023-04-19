@@ -15,6 +15,7 @@ import cz.uhk.umte.ui.async.launches.LaunchesViewModel
 import cz.uhk.umte.ui.async.rocket.RocketDetailViewModel
 import cz.uhk.umte.ui.datastore.DataStoreViewModel
 import cz.uhk.umte.ui.feeds.FeedVM
+import cz.uhk.umte.ui.schemes.SchemeVM
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -38,6 +39,7 @@ val uiModule = module {
     viewModel { LaunchesViewModel(get()) }
     viewModel { (rocketId: String) -> RocketDetailViewModel(rocketId, get()) }
     viewModel { FeedVM(get()) }
+    viewModel { SchemeVM(get()) }
     viewModel { DataStoreViewModel(get()) }
 }
 
@@ -67,6 +69,7 @@ private fun Module.db() {
     }
     // Dao
     single { get<AppDatabase>().feedDao() }
+    single { get<AppDatabase>().schemeDao() }
 }
 
 private val json = Json {

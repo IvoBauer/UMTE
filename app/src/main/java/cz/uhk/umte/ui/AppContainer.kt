@@ -14,6 +14,7 @@ import cz.uhk.umte.ui.home.HomeScreen
 import cz.uhk.umte.ui.intents.IntentsScreen
 import cz.uhk.umte.ui.notifications.NotificationScreen
 import cz.uhk.umte.ui.feeds.FeedScreen
+import cz.uhk.umte.ui.schemes.SchemeScreen
 
 @Composable
 fun AppContainer(
@@ -60,6 +61,12 @@ fun AppContainer(
         }
 
         composable(
+            route = DestinationRoom3
+        ) {
+            SchemeScreen()
+        }
+
+        composable(
             route = DestinationRoom2
         ) {
             ArticlesScreen()
@@ -91,6 +98,7 @@ private const val DestinationLaunches = "launches"
 private const val DestinationRocketDetail = "rocket/{$ArgRocketId}"
 private const val DestinationRoom = "room"
 private const val DestinationRoom2 = "room2"
+private const val DestinationRoom3 = "room3"
 private const val DestinationDataStore = "dataStore"
 private const val DestinationIntents = "intents"
 private const val DestinationNotifications = "notifications"
@@ -106,6 +114,9 @@ fun NavHostController.navigateRoomScreen() =
 
 fun NavHostController.navigateRoomScreen2() =
     navigate(DestinationRoom2)
+
+fun NavHostController.navigateRoomScreen3() =
+    navigate(DestinationRoom3)
 
 fun NavHostController.navigateDataStoreScreen() =
     navigate(DestinationDataStore)

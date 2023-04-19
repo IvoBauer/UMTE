@@ -48,6 +48,14 @@ fun HomeScreen(
 
         Button(
             onClick = {
+                parentController.navigateRoomScreen3()
+            }
+        ) {
+            Text(text = "Scheme settings")
+        }
+
+        Button(
+            onClick = {
                 context.startActivity(
                     Intent(context, FormActivity::class.java)
                 )

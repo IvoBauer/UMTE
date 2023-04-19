@@ -3,6 +3,7 @@
 package cz.uhk.umte.ui.articles
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,7 +11,10 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
 import com.prof.rssparser.Parser
@@ -32,9 +36,20 @@ import java.util.*
 fun ArticlesScreen(
     viewModel: FeedVM = getViewModel(),
 ) {
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    Box(
+        modifier = Modifier
+                .fillMaxSize()
+                .background(brush = Brush.linearGradient(
+                    colors = listOf(Color.Blue, Color.Red),
+                    start = Offset(0f, 0f),
+                    end = Offset(screenWidth.value, screenHeight.value)
+                ))
+    ) {
     Row {
         Text(
-            text = "VERZE 1.03",
+            text = "VERZE 1.04",
             style = MaterialTheme.typography.h6,
             color = Color.Gray
         )
@@ -143,7 +158,7 @@ fun ArticlesScreen(
             }
         }
     }
-}
+}}
 
 private suspend fun getFeeds(feed: NoteEntity): List<ArticleEntity>{
     val articles = mutableListOf<ArticleEntity>()
