@@ -22,9 +22,6 @@ SchemeDao {
     @Query("Select * From SchemeEntity")
     fun getAll(): List<SchemeEntity>
 
-    @Delete
-    fun remove(note: SchemeEntity)
-
     @Query("SELECT * FROM SchemeEntity")
     fun getAllPersons(): List<SchemeEntity>
 

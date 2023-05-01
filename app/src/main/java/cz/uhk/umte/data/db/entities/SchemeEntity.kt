@@ -9,5 +9,6 @@ data class SchemeEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
     val description: String = "",
+    val schemeNumber: Int,
     val used: Boolean = false,
 )

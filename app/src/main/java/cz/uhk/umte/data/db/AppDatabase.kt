@@ -8,7 +8,7 @@ import cz.uhk.umte.data.db.entities.NoteEntity
 import cz.uhk.umte.data.db.entities.SchemeEntity
 
 @Database(
-    version = AppDatabase.Version,
+    version = 2,
     entities = [
         NoteEntity::class,
         SchemeEntity::class,
@@ -21,6 +21,6 @@ abstract class AppDatabase : RoomDatabase() {
 
     companion object {
         const val Version = 1
-        const val Name = "UmteDatabase"
+        const val Name = "UmteDatabase2"
     }
 }

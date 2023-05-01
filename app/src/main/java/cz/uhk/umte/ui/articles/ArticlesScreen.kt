@@ -21,6 +21,7 @@ import com.prof.rssparser.Parser
 import cz.uhk.umte.data.db.entities.ArticleEntity
 import cz.uhk.umte.data.db.entities.NoteEntity
 import cz.uhk.umte.ui.feeds.FeedVM
+import cz.uhk.umte.ui.schemes.SchemeVM
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,25 +36,24 @@ import java.util.*
 @Composable
 fun ArticlesScreen(
     viewModel: FeedVM = getViewModel(),
+    viewModel2: SchemeVM = getViewModel()
 ) {
-    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    //viewModel2.checkSchemes()
+    var schemes = viewModel2.schemes.collectAsState(emptyList()).value
+    var schemeNumber = 1;
+    if (schemes.size > 0){
+        schemeNumber = (schemes.find{it.used})?.schemeNumber ?: 1
+    }
+
     Box(
         modifier = Modifier
-                .fillMaxSize()
-                .background(brush = Brush.linearGradient(
-                    colors = listOf(Color.Blue, Color.Red),
-                    start = Offset(0f, 0f),
-                    end = Offset(screenWidth.value, screenHeight.value)
-                ))
-    ) {
-    Row {
-        Text(
-            text = "VERZE 1.04",
-            style = MaterialTheme.typography.h6,
-            color = Color.Gray
-        )
-    }
+            .fillMaxSize()
+            .background(brush = Brush.linearGradient(
+                colors = listOf(getColor(schemeNumber,0), getColor(schemeNumber,1)),
+                start = Offset(0f, 0f),
+                end = Offset(LocalConfiguration.current.screenWidthDp.dp.value, LocalConfiguration.current.screenHeightDp.dp.value)
+            ))
+    )
 
     val feeds = viewModel.feeds.collectAsState(emptyList())
     var isLoading by remember { mutableStateOf(true) }
@@ -158,7 +158,7 @@ fun ArticlesScreen(
             }
         }
     }
-}}
+}
 
 private suspend fun getFeeds(feed: NoteEntity): List<ArticleEntity>{
     val articles = mutableListOf<ArticleEntity>()
@@ -230,4 +230,38 @@ private fun getTime(date: Date?):String?{
         stringDate = stringHours + ":" + stringMinutes + " " + stringDays + ". " + stringMonth + ". " + stringYear
     }
     return stringDate
+}
+
+fun getColor(schemeNumber: Int, index: Int):Color {
+    var color = Color.Blue
+    if (index == 0) {
+        if (schemeNumber == 1) {
+            color = Color.Red
+        }
+        if (schemeNumber == 2) {
+            color = Color.Green
+        }
+        if (schemeNumber == 3) {
+            color = Color.DarkGray
+        }
+        if (schemeNumber == 4) {
+            color = Color.Cyan
+        }
+    }
+
+    if (index == 1) {
+        if (schemeNumber == 1) {
+            color = Color.Yellow
+        }
+        if (schemeNumber == 2) {
+            color = Color.Black
+        }
+        if (schemeNumber == 3) {
+            color = Color.LightGray
+        }
+        if (schemeNumber == 4) {
+            color = Color.Magenta
+        }
+    }
+    return color
 }
