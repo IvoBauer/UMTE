@@ -2,7 +2,6 @@
 
 package cz.uhk.umte.ui.feeds
 
-import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -18,14 +17,16 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.prof.rssparser.Parser
 import cz.uhk.umte.data.db.entities.NoteEntity
 import cz.uhk.umte.ui.dialog.switch
 import cz.uhk.umte.ui.schemes.SchemeVM
 import cz.uhk.umte.ui.schemes.getColor
 import cz.uhk.umte.ui.theme.UMTETheme
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.getViewModel
+import java.nio.charset.Charset
 
 
 @Composable
@@ -33,6 +34,9 @@ fun FeedScreen(
     viewModel: FeedVM = getViewModel(),
     viewModel2: SchemeVM = getViewModel(),
 ) {
+    var feedName by remember { mutableStateOf("CBS NEWS") }
+    var feedUri by remember { mutableStateOf("https://www.cbsnews.com/latest/rss/us") }
+
     val feeds = viewModel.feeds.collectAsState(emptyList()).value
     //viewModel2.checkSchemes()
     var schemes = viewModel2.schemes.collectAsState(emptyList()).value
@@ -59,7 +63,6 @@ fun FeedScreen(
             contentPadding = PaddingValues(16.dp),
         ) {
             items(
-                //items = feeds.value,
                 items = feeds,
             ) { note ->
                 Card(
@@ -77,7 +80,6 @@ fun FeedScreen(
                         )
                         Row {
                             Text(
-                                //text = note.uri,
                                 text = note.uri,
                                 style = MaterialTheme.typography.h6,
                                 color = Color.Gray
@@ -109,8 +111,6 @@ fun FeedScreen(
                 }
             }
         }
-        var feedName by remember { mutableStateOf("CBS NEWS") }
-        var feedUri by remember { mutableStateOf("https://www.cbsnews.com/latest/rss/us") }
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(8.dp),
@@ -143,79 +143,10 @@ fun FeedScreen(
                 enabled = feedUri.isBlank().not(),
                 onClick = {
                     viewModel.addFeed(feedName,feedUri)
-                    feedName = ""
-                    feedUri = ""
                 },
             ) {
                 Text(text = "Add")
             }
         }
     }
-    //AlertDialogScreen()
-}
-
-fun readValue(string: List<NoteEntity>){
-    print(string)
-}
-
-@Preview
-@Composable
-fun AlertDialogScreen() {
-    UMTETheme {
-        val dialogShown = remember {
-            mutableStateOf(false)
-        }
-        Button(
-            onClick = { dialogShown.switch() },
-        ) {
-            Text(text = "${if (dialogShown.value) "Hide" else "Show"} dialog")
-        }
-
-        if (dialogShown.value) {
-            AlertDialog(
-                onDismissRequest = { dialogShown.switch() },
-                buttons = {
-                    TextButton(onClick = { dialogShown.switch() }) {
-                        Text("Ok")
-                    }
-                },
-                title = { Text("Dialog title") },
-                text = { Text("Toto je tělo dialogu") },
-            )
-        }
-    }
-}
-
-fun getColor(schemeNumber: Int, index: Int):Color {
-    var color = Color.Blue
-    if (index == 0) {
-        if (schemeNumber == 1) {
-            color = Color.Red
-        }
-        if (schemeNumber == 2) {
-            color = Color.Green
-        }
-        if (schemeNumber == 3) {
-            color = Color.DarkGray
-        }
-        if (schemeNumber == 4) {
-            color = Color.Cyan
-        }
-    }
-
-    if (index == 1) {
-        if (schemeNumber == 1) {
-            color = Color.Yellow
-        }
-        if (schemeNumber == 2) {
-            color = Color.Black
-        }
-        if (schemeNumber == 3) {
-            color = Color.LightGray
-        }
-        if (schemeNumber == 4) {
-            color = Color.Magenta
-        }
-    }
-    return color
 }
