@@ -5,6 +5,7 @@ package cz.uhk.umte.ui.feeds
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
@@ -36,7 +37,6 @@ fun FeedScreen(
 ) {
     var feedName by remember { mutableStateOf("CBS NEWS") }
     var feedUri by remember { mutableStateOf("https://www.cbsnews.com/latest/rss/us") }
-
     val feeds = viewModel.feeds.collectAsState(emptyList()).value
     //viewModel2.checkSchemes()
     var schemes = viewModel2.schemes.collectAsState(emptyList()).value
@@ -44,6 +44,7 @@ fun FeedScreen(
     if (schemes.size > 0){
         schemeNumber = (schemes.find{it.used})?.schemeNumber ?: 1
     }
+
 
     Box(
         modifier = Modifier

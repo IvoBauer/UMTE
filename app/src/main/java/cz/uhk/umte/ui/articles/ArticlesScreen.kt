@@ -7,19 +7,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
 import com.prof.rssparser.Parser
 import cz.uhk.umte.data.db.entities.ArticleEntity
 import cz.uhk.umte.data.db.entities.NoteEntity
+import cz.uhk.umte.ui.async.rocket.openWebPage
 import cz.uhk.umte.ui.feeds.FeedVM
 import cz.uhk.umte.ui.schemes.SchemeVM
 import kotlinx.coroutines.CoroutineScope
@@ -38,12 +42,12 @@ fun ArticlesScreen(
     viewModel: FeedVM = getViewModel(),
     viewModel2: SchemeVM = getViewModel()
 ) {
-    //viewModel2.checkSchemes()
     var schemes = viewModel2.schemes.collectAsState(emptyList()).value
     var schemeNumber = 1;
     if (schemes.size > 0){
         schemeNumber = (schemes.find{it.used})?.schemeNumber ?: 1
     }
+    var filter by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -55,12 +59,12 @@ fun ArticlesScreen(
             ))
     )
 
-    val feeds = viewModel.feeds.collectAsState(emptyList())
+    val feeds = viewModel.feeds.collectAsState(emptyList()).value
     var isLoading by remember { mutableStateOf(true) }
     var articles by remember { mutableStateOf(emptyList<ArticleEntity>()) }
-    val feeds3 = feeds.value
+    var filteredArticles by remember { mutableStateOf<List<ArticleEntity>>(articles) }
 
-    feeds3.forEach { feed ->
+    feeds.forEach { feed ->
 
         if (feed.solved){
 
@@ -73,10 +77,11 @@ fun ArticlesScreen(
         }
         }
     }
-    if (feeds3.isEmpty()){
+    filteredArticles = articles.filter { it.summary!!.contains(filter, ignoreCase = true) || it.title!!.contains(filter, ignoreCase = true) }
+    if (feeds.isEmpty()){
         isLoading = false
     }
-    if (articles.isEmpty()){
+    if (filteredArticles.isEmpty()){
         Row {
             Text(
                 text = "ERROR ŽÁDNÝ ČLÁNEK!!!",
@@ -94,15 +99,23 @@ fun ArticlesScreen(
             CircularProgressIndicator()
         }
     } else {
-        val sortedArticles = articles.sortedByDescending { it.pubDate }
-        println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-        sortedArticles.forEach(){
-            item ->
-            val article = item.pubDate.toString() + " " + item.title
-            println(article)
-        }
-        println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+        val sortedArticles = filteredArticles.sortedByDescending { it.pubDate }
         Column {
+            Box(contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(top = 16.dp)
+                    .padding(bottom = 8.dp)
+                    .background(Color.Transparent)
+                    .width(LocalConfiguration.current.screenWidthDp.dp)
+                    ) {
+                OutlinedTextField(
+                    value = filter,
+                    onValueChange = {filterText ->
+                        filter = filterText
+                     },
+                    label = { Text(text = "Filter") },
+                    modifier = Modifier.width((LocalConfiguration.current.screenWidthDp*0.8).dp).background(Color.Transparent).padding(bottom = 8.dp).background(color = Color.Transparent, shape = RoundedCornerShape(16.dp))
+                )
+            }
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -111,7 +124,7 @@ fun ArticlesScreen(
                 contentPadding = PaddingValues(16.dp),
             ) {
                 items(
-                    items = articles,
+                    items = sortedArticles,
                 ) { note ->
                     Card(
                         backgroundColor = MaterialTheme.colors.background,
@@ -144,12 +157,13 @@ fun ArticlesScreen(
 
                             Row(horizontalArrangement = Arrangement.SpaceBetween) {
                                 Spacer(modifier = Modifier.width(width = 60.dp))
+                                val context = LocalContext.current
 
                                 Button(onClick = {
-                                    //viewModel.removeFeed(note)
+                                    context.openWebPage(note.uri!!)
+
                                 }) {
                                     Text("Read article", style = MaterialTheme.typography.h6)
-                                    //Icon(imageVector = Icons.Default.Delete, contentDescription = "Read article", modifier = Modifier.align(Alignment.CenterVertically))
                                 }
                             }
                         }
@@ -166,17 +180,9 @@ private suspend fun getFeeds(feed: NoteEntity): List<ArticleEntity>{
         .charset(Charset.forName("UTF-8"))
         .build()
 
-    //url of RSS feed
-
-    //val url = "https://domaci.hn.cz/?m=rss"
-    //val url = "https://servis.idnes.cz/rss.aspx?c=zpravodaj"
-    val url = feed.uri
-
     try {
-        val channel = parser.getChannel(url)
-        //val articlesMEOW = channel.articles;
+        val channel = parser.getChannel(feed.uri)
         channel.articles.forEach { item ->
-
             val dateString = item.pubDate
             var date : Date? = null
             try {
@@ -198,17 +204,16 @@ private suspend fun getFeeds(feed: NoteEntity): List<ArticleEntity>{
             } catch (e: Exception){
                 e.printStackTrace()
             }
+            if (item.description == null){
+                item.description == "Not found."
+            }
         articles.add(
-            ArticleEntity(item.title, item.description, date)
+            ArticleEntity(item.title, item.description, date, item.link)
         )
         }
     } catch (e: Exception) {
-
         e.printStackTrace()
-        // Handle the exception
     }
-
-
     return articles
 }
 

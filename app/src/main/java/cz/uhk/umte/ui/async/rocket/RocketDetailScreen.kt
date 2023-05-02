@@ -77,6 +77,6 @@ fun RocketDetailView(detail: RocketDetailResponse) {
     }
 }
 
-private fun Context.openWebPage(url: String) {
+fun Context.openWebPage(url: String) {
     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
 }
