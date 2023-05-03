@@ -58,7 +58,7 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "Rss Reader",
+            text = "RSS Reader",
             style = MaterialTheme.typography.h2,
             color = Color.Gray
         )
