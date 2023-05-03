@@ -32,7 +32,7 @@ fun FeedScreen(
     var feedName by remember { mutableStateOf("") }
     var feedUri by remember { mutableStateOf("") }
     val feeds = viewModel.feeds.collectAsState(emptyList()).value
-    var schemes = viewModel2.schemes.collectAsState(emptyList()).value
+    val schemes = viewModel2.schemes.collectAsState(emptyList()).value
     var schemeNumber = 1;
     if (schemes.size > 0){
         schemeNumber = (schemes.find{it.used})?.schemeNumber ?: 1
