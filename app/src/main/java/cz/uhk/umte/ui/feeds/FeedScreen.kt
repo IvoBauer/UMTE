@@ -19,14 +19,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-import com.prof.rssparser.Parser
-import cz.uhk.umte.data.db.entities.NoteEntity
 import cz.uhk.umte.ui.schemes.SchemeVM
 import cz.uhk.umte.ui.schemes.getColor
-import cz.uhk.umte.ui.theme.UMTETheme
-import kotlinx.coroutines.delay
 import org.koin.androidx.compose.getViewModel
-import java.nio.charset.Charset
 
 
 @Composable
@@ -34,8 +29,8 @@ fun FeedScreen(
     viewModel: FeedVM = getViewModel(),
     viewModel2: SchemeVM = getViewModel(),
 ) {
-    var feedName by remember { mutableStateOf("CBS NEWS") }
-    var feedUri by remember { mutableStateOf("https://www.cbsnews.com/latest/rss/us") }
+    var feedName by remember { mutableStateOf("") }
+    var feedUri by remember { mutableStateOf("") }
     val feeds = viewModel.feeds.collectAsState(emptyList()).value
     var schemes = viewModel2.schemes.collectAsState(emptyList()).value
     var schemeNumber = 1;
@@ -87,7 +82,7 @@ fun FeedScreen(
 
                         Row (horizontalArrangement = Arrangement.SpaceBetween){
                             Checkbox(
-                                checked = note.solved,
+                                checked = note.used,
                                 onCheckedChange = {
                                     viewModel.handleNoteCheck(note)
                                 },

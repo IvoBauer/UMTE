@@ -14,10 +14,10 @@ class SchemeVM(
         launch {
             val schemes = schemeDao.getAll()
             if (schemes.size == 0){
-                addScheme("Red and yellow",1,true)
+                addScheme("Red and black",1,true)
                 addScheme("Green and black",2, false)
-                addScheme("Grey and light grey",3, false)
-                addScheme("Blue and pink",4, false)
+                addScheme("Grey and black",3, false)
+                addScheme("Blue and black",4, false)
             }
         }
     }

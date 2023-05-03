@@ -1,21 +1,13 @@
 package cz.uhk.umte.ui.feeds
 
-import android.provider.ContactsContract.CommonDataKinds.Note
-import android.util.Log
-import androidx.compose.material.*
-import androidx.compose.runtime.*
 import com.prof.rssparser.Parser
-import cz.uhk.umte.data.db.dao.NoteDao
-import cz.uhk.umte.data.db.entities.NoteEntity
+import cz.uhk.umte.data.db.dao.FeedDao
+import cz.uhk.umte.data.db.entities.FeedEntity
 import cz.uhk.umte.ui.base.BaseViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import java.nio.charset.Charset
 
 class FeedVM(
-    private val feedDao: NoteDao,
+    private val feedDao: FeedDao,
 ) : BaseViewModel() {
 
     val feeds = feedDao.selectAll()
@@ -28,7 +20,7 @@ class FeedVM(
             val channel = parser.getChannel(feedUri)
             if (channel.articles.isNotEmpty()){
                 feedDao.insertOrUpdate(
-                    note = NoteEntity(
+                    note = FeedEntity(
                         text = feedName,
                         uri =  feedUri
                     )
@@ -36,17 +28,17 @@ class FeedVM(
             }
         }
     }
-    fun removeFeed(note: NoteEntity){
+    fun removeFeed(note: FeedEntity){
         launch{
             feedDao.remove(note)
         }
     }
 
-    fun handleNoteCheck(note: NoteEntity) {
+    fun handleNoteCheck(note: FeedEntity) {
         launch {
             feedDao.insertOrUpdate(
                 note = note.copy(
-                    solved = note.solved.not(),
+                    used = note.used.not(),
                 )
             )
         }

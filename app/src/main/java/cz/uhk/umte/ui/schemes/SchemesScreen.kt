@@ -49,6 +49,16 @@ fun SchemeScreen(
     Column {
 
         var meow = mutableListOf("")
+
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.padding(top = 50.dp)
+        ) {
+            Text(
+                text = "Choose a color scheme:",
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
         schemes.forEachIndexed { index, text ->
             if (!meow.contains(text.description)){
                 meow.add(text.description)
@@ -61,6 +71,8 @@ fun SchemeScreen(
                         print(index)}
                     )
                     .padding(horizontal = 16.dp, vertical = 8.dp)
+                ,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 RadioButton(
                     selected = (selectedOptionIndex == index),
@@ -96,22 +108,22 @@ fun getColor(schemeNumber: Int, index: Int):Color {
             color = Color.DarkGray
         }
         if (schemeNumber == 4) {
-            color = Color.Cyan
+            color = Color.Blue
         }
     }
 
     if (index == 1) {
         if (schemeNumber == 1) {
-            color = Color.Yellow
+            color = Color.Black
         }
         if (schemeNumber == 2) {
             color = Color.Black
         }
         if (schemeNumber == 3) {
-            color = Color.LightGray
+            color = Color.Black
         }
         if (schemeNumber == 4) {
-            color = Color.Magenta
+            color = Color.Black
         }
     }
     return color

@@ -15,29 +15,24 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.MutableLiveData
 import com.prof.rssparser.Parser
 import cz.uhk.umte.data.db.entities.ArticleEntity
-import cz.uhk.umte.data.db.entities.NoteEntity
+import cz.uhk.umte.data.db.entities.FeedEntity
 //import cz.uhk.umte.ui.async.rocket.openWebPage
 import cz.uhk.umte.ui.feeds.FeedVM
 import cz.uhk.umte.ui.schemes.SchemeVM
-import kotlinx.coroutines.CoroutineScope
+import cz.uhk.umte.ui.schemes.getColor
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.getViewModel
 import java.nio.charset.Charset
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 @Composable
@@ -67,9 +62,17 @@ fun ArticlesScreen(
     var articles by remember { mutableStateOf(emptyList<ArticleEntity>()) }
     var filteredArticles by remember { mutableStateOf<List<ArticleEntity>>(articles) }
 
+    if (isLoading) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            CircularProgressIndicator()
+        }}
+
     feeds.forEach { feed ->
 
-        if (feed.solved){
+        if (feed.used){
 
         LaunchedEffect(Unit) {
             val newArticles =  getFeeds(feed) // získání seznamu článků z RSS
@@ -86,21 +89,17 @@ fun ArticlesScreen(
     }
     if (filteredArticles.isEmpty()){
         Row {
-            Text(
-                text = "ERROR ŽÁDNÝ ČLÁNEK!!!",
-                style = MaterialTheme.typography.h6,
-                color = Color.Gray
-            )
-        }
-    }
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(
+                    text = "Žádný článek nenalezen. Přidejte Rss feed, nebo se ujistěte, že máte připojení k internetu.",
+                    style = MaterialTheme.typography.h6,
+                    color = Color.Gray
 
-    if (isLoading) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            CircularProgressIndicator()
-        }
+                )
+            }}
     } else {
         val sortedArticles = filteredArticles.sortedByDescending { it.pubDate }
         Column {
@@ -177,7 +176,7 @@ fun ArticlesScreen(
     }
 }
 
-private suspend fun getFeeds(feed: NoteEntity): List<ArticleEntity>{
+private suspend fun getFeeds(feed: FeedEntity): List<ArticleEntity>{
     val articles = mutableListOf<ArticleEntity>()
     val parser = Parser.Builder()
         .charset(Charset.forName("UTF-8"))
@@ -238,40 +237,6 @@ private fun getTime(date: Date?):String?{
         stringDate = stringHours + ":" + stringMinutes + " " + stringDays + ". " + stringMonth + ". " + stringYear
     }
     return stringDate
-}
-
-fun getColor(schemeNumber: Int, index: Int):Color {
-    var color = Color.Blue
-    if (index == 0) {
-        if (schemeNumber == 1) {
-            color = Color.Red
-        }
-        if (schemeNumber == 2) {
-            color = Color.Green
-        }
-        if (schemeNumber == 3) {
-            color = Color.DarkGray
-        }
-        if (schemeNumber == 4) {
-            color = Color.Cyan
-        }
-    }
-
-    if (index == 1) {
-        if (schemeNumber == 1) {
-            color = Color.Yellow
-        }
-        if (schemeNumber == 2) {
-            color = Color.Black
-        }
-        if (schemeNumber == 3) {
-            color = Color.LightGray
-        }
-        if (schemeNumber == 4) {
-            color = Color.Magenta
-        }
-    }
-    return color
 }
 
 fun Context.openWebPage(url: String) {

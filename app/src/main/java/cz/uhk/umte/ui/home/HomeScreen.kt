@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -23,6 +24,7 @@ import androidx.navigation.NavHostController
 import cz.uhk.umte.R
 import cz.uhk.umte.ui.*
 import cz.uhk.umte.ui.schemes.SchemeVM
+import cz.uhk.umte.ui.schemes.getColor
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -55,6 +57,11 @@ fun HomeScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Text(
+            text = "Rss Reader",
+            style = MaterialTheme.typography.h2,
+            color = Color.Gray
+        )
         Button(
             onClick = {
                 parentController.navigateRoomScreen()
@@ -79,38 +86,4 @@ fun HomeScreen(
             Text(text = "Scheme settings")
         }
     }
-}
-
-fun getColor(schemeNumber: Int?, index: Int):Color {
-    var color = Color.Blue
-    if (index == 0) {
-        if (schemeNumber == 1) {
-            color = Color.Red
-        }
-        if (schemeNumber == 2) {
-            color = Color.Green
-        }
-        if (schemeNumber == 3) {
-            color = Color.DarkGray
-        }
-        if (schemeNumber == 4) {
-            color = Color.Cyan
-        }
-    }
-
-    if (index == 1) {
-        if (schemeNumber == 1) {
-            color = Color.Yellow
-        }
-        if (schemeNumber == 2) {
-            color = Color.Black
-        }
-        if (schemeNumber == 3) {
-            color = Color.LightGray
-        }
-        if (schemeNumber == 4) {
-            color = Color.Magenta
-        }
-    }
-    return color
 }

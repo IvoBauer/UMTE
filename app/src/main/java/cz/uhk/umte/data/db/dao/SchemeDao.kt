@@ -1,8 +1,6 @@
 package cz.uhk.umte.data.db.dao
 
-import android.provider.ContactsContract.CommonDataKinds.Note
 import androidx.room.*
-import cz.uhk.umte.data.db.entities.NoteEntity
 import cz.uhk.umte.data.db.entities.SchemeEntity
 import kotlinx.coroutines.flow.Flow
 
