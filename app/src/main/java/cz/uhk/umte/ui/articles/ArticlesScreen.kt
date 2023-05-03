@@ -87,41 +87,39 @@ fun ArticlesScreen(
     if (feeds.isEmpty()){
         isLoading = false
     }
-    if (filteredArticles.isEmpty()){
-        Row {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Text(
-                    text = "Žádný článek nenalezen. Přidejte Rss feed, nebo se ujistěte, že máte připojení k internetu.",
-                    style = MaterialTheme.typography.h6,
-                    color = Color.Gray
 
-                )
-            }}
+    Box(contentAlignment = Alignment.Center,
+        modifier = Modifier.padding(top = 16.dp)
+            .padding(bottom = 8.dp)
+            .background(Color.Transparent)
+            .width(LocalConfiguration.current.screenWidthDp.dp)
+    ) {
+        OutlinedTextField(
+            value = filter,
+            onValueChange = {filterText ->
+                filter = filterText
+            },
+            label = { Text(text = "Filter") },
+            modifier = Modifier.width((LocalConfiguration.current.screenWidthDp*0.8).dp).background(Color.Transparent).padding(bottom = 8.dp).background(color = Color.Transparent, shape = RoundedCornerShape(16.dp))
+        )
+    }
+
+    if (filteredArticles.isEmpty()){
+        Text(
+            text = "Žádný článek nenalezen. Přidejte Rss feed, nebo se ujistěte, že máte připojení k internetu.",
+            style = MaterialTheme.typography.h6,
+            color = Color.White,
+            modifier = Modifier.padding(top = 100.dp, start = 16.dp, end = 16.dp)
+        )
     } else {
         val sortedArticles = filteredArticles.sortedByDescending { it.pubDate }
         Column {
-            Box(contentAlignment = Alignment.Center,
-                modifier = Modifier.padding(top = 16.dp)
-                    .padding(bottom = 8.dp)
-                    .background(Color.Transparent)
-                    .width(LocalConfiguration.current.screenWidthDp.dp)
-                    ) {
-                OutlinedTextField(
-                    value = filter,
-                    onValueChange = {filterText ->
-                        filter = filterText
-                     },
-                    label = { Text(text = "Filter") },
-                    modifier = Modifier.width((LocalConfiguration.current.screenWidthDp*0.8).dp).background(Color.Transparent).padding(bottom = 8.dp).background(color = Color.Transparent, shape = RoundedCornerShape(16.dp))
-                )
-            }
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1F),
+                    .weight(1F)
+                    .padding(top = 100.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(16.dp),
             ) {
