@@ -21,7 +21,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.prof.rssparser.Parser
 import cz.uhk.umte.data.db.entities.NoteEntity
-import cz.uhk.umte.ui.dialog.switch
 import cz.uhk.umte.ui.schemes.SchemeVM
 import cz.uhk.umte.ui.schemes.getColor
 import cz.uhk.umte.ui.theme.UMTETheme
@@ -38,7 +37,6 @@ fun FeedScreen(
     var feedName by remember { mutableStateOf("CBS NEWS") }
     var feedUri by remember { mutableStateOf("https://www.cbsnews.com/latest/rss/us") }
     val feeds = viewModel.feeds.collectAsState(emptyList()).value
-    //viewModel2.checkSchemes()
     var schemes = viewModel2.schemes.collectAsState(emptyList()).value
     var schemeNumber = 1;
     if (schemes.size > 0){

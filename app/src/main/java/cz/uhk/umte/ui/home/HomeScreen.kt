@@ -22,9 +22,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import cz.uhk.umte.R
 import cz.uhk.umte.ui.*
-import cz.uhk.umte.ui.dialog.DialogActivity
-import cz.uhk.umte.ui.form.FormActivity
-import cz.uhk.umte.ui.lazylist.LazyListActivity
 import cz.uhk.umte.ui.schemes.SchemeVM
 import org.koin.androidx.compose.getViewModel
 

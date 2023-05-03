@@ -2,6 +2,9 @@
 
 package cz.uhk.umte.ui.articles
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,7 +26,7 @@ import androidx.lifecycle.MutableLiveData
 import com.prof.rssparser.Parser
 import cz.uhk.umte.data.db.entities.ArticleEntity
 import cz.uhk.umte.data.db.entities.NoteEntity
-import cz.uhk.umte.ui.async.rocket.openWebPage
+//import cz.uhk.umte.ui.async.rocket.openWebPage
 import cz.uhk.umte.ui.feeds.FeedVM
 import cz.uhk.umte.ui.schemes.SchemeVM
 import kotlinx.coroutines.CoroutineScope
@@ -269,4 +272,8 @@ fun getColor(schemeNumber: Int, index: Int):Color {
         }
     }
     return color
+}
+
+fun Context.openWebPage(url: String) {
+    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
 }

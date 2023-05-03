@@ -7,12 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import cz.uhk.umte.ui.articles.ArticlesScreen
-import cz.uhk.umte.ui.async.launches.RocketLaunchesScreen
-import cz.uhk.umte.ui.async.rocket.RocketDetailScreen
-import cz.uhk.umte.ui.datastore.DataStoreScreen
 import cz.uhk.umte.ui.home.HomeScreen
-import cz.uhk.umte.ui.intents.IntentsScreen
-import cz.uhk.umte.ui.notifications.NotificationScreen
 import cz.uhk.umte.ui.feeds.FeedScreen
 import cz.uhk.umte.ui.schemes.SchemeScreen
 
@@ -36,25 +31,6 @@ fun AppContainer(
         }
 
         composable(
-            route = DestinationLaunches,
-        ) {
-            RocketLaunchesScreen(
-                onNavigateDetail = { rocketId ->
-                    controller.navigateRocketDetail(rocketId)
-                },
-            )
-        }
-
-        composable(
-            route = DestinationRocketDetail,
-            arguments = listOf(navArgument(ArgRocketId) { type = NavType.StringType })
-        ) { navBackStackEntry ->
-            RocketDetailScreen(
-                rocketId = navBackStackEntry.arguments?.getString(ArgRocketId).orEmpty(),
-            )
-        }
-
-        composable(
             route = DestinationRoom
         ) {
             FeedScreen()
@@ -70,23 +46,6 @@ fun AppContainer(
             route = DestinationRoom2
         ) {
             ArticlesScreen()
-        }
-        composable(
-            route = DestinationDataStore
-        ) {
-            DataStoreScreen()
-        }
-
-        composable(
-            route = DestinationIntents
-        ) {
-            IntentsScreen()
-        }
-
-        composable(
-            route = DestinationNotifications
-        ) {
-            NotificationScreen()
         }
     }
 }
